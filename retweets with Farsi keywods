@@ -18,10 +18,10 @@ from pprint import pprint
 warnings.filterwarnings("ignore")
 
 #add your keys for using twitter api here  
-access_token = "1003038299135660034-oezQBRtGJhIy04apMXGPRXGGEWLVH4"
-access_token_secret = "eotnK6hzbBIup6MGEckpMZXhB79XEdL7gZbGrT29847HV"
-consumer_key = "1XcjLLP099Z6On6BrqwXy5V8L"
-consumer_secret = "k8E85RxU94JdzmyqqoRiuKXHE5YRrJftNXHvUpLqt2EF0BGFUK"
+access_token = "..."
+access_token_secret = "..."
+consumer_key = "..."
+consumer_secret = "..."
 
 # And, setup the authentication 
 auth_handler = OAuthHandler(consumer_key, consumer_secret)
