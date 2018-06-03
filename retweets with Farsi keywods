@@ -1,0 +1,70 @@
+#I put everything in steps, feel free to ask questions 
+#the only thing is that your bot works as long as your code is running
+#the main part of the code comes from 
+#here: (http://masnun.com/2015/12/05/creating-a-twitter-retweet-bot-in-python.html) 
+#I changed a few lines
+
+
+#Firt Step
+#import what you need 
+from tweepy.streaming import StreamListener
+from tweepy import OAuthHandler, API
+from tweepy import Stream
+import json
+import logging
+import warnings
+from pprint import pprint
+ 
+warnings.filterwarnings("ignore")
+
+#add your keys for using twitter api here  
+access_token = "1003038299135660034-oezQBRtGJhIy04apMXGPRXGGEWLVH4"
+access_token_secret = "eotnK6hzbBIup6MGEckpMZXhB79XEdL7gZbGrT29847HV"
+consumer_key = "1XcjLLP099Z6On6BrqwXy5V8L"
+consumer_secret = "k8E85RxU94JdzmyqqoRiuKXHE5YRrJftNXHvUpLqt2EF0BGFUK"
+
+# And, setup the authentication 
+auth_handler = OAuthHandler(consumer_key, consumer_secret)
+auth_handler.set_access_token(access_token, access_token_secret)
+twitter_client = API(auth_handler)
+
+logging.getLogger("main").setLevel(logging.INFO)
+
+#here add the words that you do not want see in the tweets 
+do_not_want = ["برق", "اینترنت", "پا", "چشم", " ليوان"]
+ 
+    
+class water_listener(StreamListener):
+    def on_data(self, data):
+        tweet = json.loads(data)
+        try:
+            publish = True
+            for word in do_not_want:
+                #here we are filtering the words we do not want to see 
+                if word in tweet['text'].lower():
+                    logging.info("SKIPPED FOR {}".format(word))
+                    publish = False
+                    
+            #only the tweets in Farsi 
+            if tweet.get('lang') and tweet.get('lang') != 'fa':
+                publish = False
+ 
+            if publish:
+                twitter_client.retweet(tweet['id'])
+                logging.debug("RT: {}".format(tweet['text']))
+ 
+        except Exception as ex:
+            logging.error(ex)
+        return True
+ 
+    def on_error(self, status_code):
+        if status_code == 420:
+            #"We can use on_error to catch 420 errors and disconnect our stream."
+            return False
+ 
+ 
+if __name__ == '__main__':
+    listener = water_listener()
+    stream = Stream(auth_handler, listener)
+    #and here the works you want to see 
+    stream.filter(track=[ 'خشکسالی','بحران آب', 'کم آبی'])
